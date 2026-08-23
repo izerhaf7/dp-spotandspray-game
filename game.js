@@ -120,6 +120,11 @@ const Screens = {
     } else {
       Leaderboard.stopAutoRefresh();
     }
+
+    // Load mini leaderboard when showing start screen
+    if (name === 'start') {
+      Leaderboard.fetchMini();
+    }
   }
 };
 
@@ -702,6 +707,44 @@ const Leaderboard = {
       clearInterval(leaderboardRefreshId);
       leaderboardRefreshId = null;
     }
+  },
+
+  /** Fetch top 5 for the mini leaderboard on start screen */
+  async fetchMini() {
+    const contentEl = document.getElementById('mini-lb-content');
+    if (!contentEl) return;
+
+    try {
+      if (!supabaseClient) {
+        contentEl.innerHTML = '<div class="mini-lb-empty">Leaderboard offline</div>';
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('name, score')
+        .order('score', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        contentEl.innerHTML = '<div class="mini-lb-empty">Belum ada skor — jadilah yang pertama!</div>';
+        return;
+      }
+
+      const medals = ['🥇', '🥈', '🥉', '4', '5'];
+      contentEl.innerHTML = data.map((entry, i) => {
+        const safeName = (entry.name || 'Anon').replace(/[<>&"']/g, '');
+        return `<div class="mini-lb-row">
+          <span class="mini-lb-rank">${medals[i] || (i + 1)}</span>
+          <span class="mini-lb-name">${safeName}</span>
+          <span class="mini-lb-score">${entry.score}</span>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      contentEl.innerHTML = '<div class="mini-lb-error">Gagal memuat</div>';
+    }
   }
 };
 
@@ -722,6 +765,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Supabase init error:', e);
   }
 
-  // Show start screen
+  // Show start screen (also triggers mini leaderboard load)
   Screens.show('start');
 });
