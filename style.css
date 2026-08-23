@@ -27,6 +27,9 @@ body { background: #0B0F12; color: #EAF2ED; }
 .start-sky { position: absolute; inset: 0; opacity: 0.3; background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.8) 0%, transparent 60%); }
 .start-content { position: relative; z-index: 2; text-align: center; padding: 1rem; width: 100%; max-width: 400px; }
 
+/* Desktop QR Panel — hidden on mobile */
+.desktop-qr-panel { display: none; }
+
 /* Drone Hero CSS Art */
 .drone-hero { position: relative; width: 120px; height: 90px; margin: 0 auto 1rem; animation: droneFloat 3s ease-in-out infinite; }
 @keyframes droneFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -346,4 +349,41 @@ body { background: #0B0F12; color: #EAF2ED; }
 }
 @media (min-width: 420px) {
   .game-grid { max-width: 420px; }
+}
+
+/* Desktop: show QR panel side-by-side */
+@media (min-width: 768px) {
+  #screen-start { flex-direction: row; justify-content: center; align-items: center; gap: 3rem; }
+  .desktop-qr-panel {
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    position: relative; z-index: 2;
+    background: rgba(251,243,222,0.9); border-radius: 16px; padding: 1.5rem 2rem;
+    border: 2px solid rgba(78,155,74,0.2);
+    box-shadow: 0 8px 32px rgba(122,82,64,0.12);
+    animation: qrPulse 3s ease-in-out infinite;
+  }
+  @keyframes qrPulse {
+    0%,100% { box-shadow: 0 8px 32px rgba(122,82,64,0.12); }
+    50% { box-shadow: 0 8px 40px rgba(78,155,74,0.2), 0 0 0 4px rgba(78,155,74,0.08); }
+  }
+  .desktop-qr-img {
+    width: 200px; height: 200px; border-radius: 12px;
+    border: 3px solid #4E9B4A; padding: 8px; background: #fff;
+    image-rendering: pixelated;
+  }
+  .desktop-qr-label {
+    font-family: 'Press Start 2P', cursive; font-size: 0.65rem;
+    color: #5C3D2E; text-align: center; line-height: 1.8; letter-spacing: 1px;
+  }
+  .desktop-qr-sub {
+    font-family: 'Space Mono', monospace; font-size: 0.85rem;
+    color: #4E9B4A; font-weight: 700;
+  }
+  .start-content { max-width: 420px; }
+}
+
+@media (min-width: 1024px) {
+  .desktop-qr-panel { padding: 2rem 2.5rem; }
+  .desktop-qr-img { width: 240px; height: 240px; }
+  .desktop-qr-label { font-size: 0.75rem; }
 }
